@@ -1,4 +1,8 @@
 # MinHash-DocSimilarity
-用MinHash实现文档间相似度的比较
+Using the Min-Hash algorithm to compare different docs’ similarities.
 
-省略了分词处理文件的步骤，比较简单粗暴的一个O(N^3)代码实现，冗余的数据结构可能比较多，但流程框架基本复刻了原算法
+We skip the step of splitting words.
+
+It’s a simple and crude code implementation in Python in O(N^3) complexity.
+
+You may find many redundant data structures (forgive it, it’s just derived from a tiny homework), but the whole process follows the origin theory clearly.

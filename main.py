@@ -23,15 +23,15 @@ def randomPickHashParameter(hash_number):
 
 
 if __name__ == '__main__':
-    docsets = []  # 所有文档的名字
-    all_doc_words_list = []  # 所有文档的词汇列表
+    docsets = []  # all doc names
+    all_doc_words_list = []  # all doc word lists
     dict = set()  # 全局词典
-    docs_to_shinglesets = {}  # 文档转换成bucketID的集合
-    docs_to_shinglesetsmatrix = {}  # 文档转换成特征矩阵
-    hash_signatures = []  # 哈希签名矩阵
+    docs_to_shinglesets = {}  # the set of doc -> bucketID
+    docs_to_shinglesetsmatrix = {}  # the set of doc -> feature_matrix
+    hash_signatures = []  # hash signature matrix
 
-    # Step0: 数据集处理
-    for i in range(1, num_of_doc + 1):  # 对所有文档进行处理
+    # Step0: dataset preprocessing
+    for i in range(1, num_of_doc + 1):  # for all docs
         words = []
         filename = "output-" + str(i) + ".txt"
         docsets.append(filename)
@@ -42,13 +42,13 @@ if __name__ == '__main__':
                 words.append(word)
         words = [j for j in words if j != '']
         temp_words = []
-        for index in range(0, len(words) - k_shingle + 1):  # 采用k-shingling组成分词集合
+        for index in range(0, len(words) - k_shingle + 1):  # k-shingling
             shingle = words[index]  # + " " + words[index + 1]
             temp_words.append(shingle)
         all_doc_words_list.append(temp_words)
         dict = dict.union(set(temp_words))
 
-    # Step1: 文档 ——> shingling sets
+    # Step1: docs ——> shingling sets
     for i in range(1, num_of_doc + 1):
         words = all_doc_words_list[i - 1]
         doc_to_single_sihingle = set()
@@ -61,9 +61,9 @@ if __name__ == '__main__':
         docs_to_shinglesets["output-" + str(i) + ".txt"] = sorted(doc_to_single_sihingle)
         docs_to_shinglesetsmatrix["output-" + str(i) + ".txt"] = feature_matrix
 
-    # Step2: 生成Min-Hash签名矩阵
+    # Step2: generate Min-Hash signature matrix
     numElems = int(num_of_doc * (num_of_doc - 1) / 2)
-    paraM = randomPickHashParameter(num_of_hash_functions)  # 随机生成Hash函数
+    paraM = randomPickHashParameter(num_of_hash_functions)  # genearte Hash functions randomly
     paraN = randomPickHashParameter(num_of_hash_functions)
     for doc_name in docsets:
         shingleIDSet = docs_to_shinglesets[doc_name]
@@ -81,7 +81,7 @@ if __name__ == '__main__':
             hash_signature.append(minHashCode)
         hash_signatures.append(hash_signature)
 
-    # Step3: 比较相似度：
+    # Step3: compare similarities：
     estMatrix = np.zeros([num_of_doc, num_of_doc])
     for i in range(0, num_of_doc):
         sig1 = hash_signatures[i]
@@ -92,9 +92,9 @@ if __name__ == '__main__':
                 count = count + (sig1[k] == sig2[k])
             estMatrix[i][j] = count / num_of_hash_functions
 
-    # Step4: 输出前五个最大相似度的文档
-    print("基于", num_of_hash_functions, "个哈希函数计算所得最相似的文档排序如下:")
+    # Step4: output the most similar doc pair
+    print("Based on", num_of_hash_functions, "hash functions sorted by similarities")
     for i in range(5):
         index = np.unravel_index(estMatrix.argmax(), estMatrix.shape)
-        print("文档", list(index)[0], "与文档", list(index)[1], "相似度为", estMatrix.max())
+        print("Doc", list(index)[0], "and Doc", list(index)[1], "Similarity is", estMatrix.max())
         estMatrix[list(index)[0]][list(index)[1]] = 0
