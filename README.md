@@ -1,2 +1,4 @@
 # MinHash-DocSimilarity
-Use Min-Hash to Compare Different Docs Similarity
+用MinHash实现文档间相似度的比较
+
+省略了分词处理文件的步骤，比较简单粗暴的一个O(N^3)代码实现，冗余的数据结构可能比较多，但流程框架基本复刻了原算法
